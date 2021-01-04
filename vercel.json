@@ -1,0 +1,22 @@
+{
+    "name": "to-do-api",
+    "version": 2,
+    "builds": [
+      {
+        "src": "index.js",
+        "use": "@vercel/node"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "/index.js"
+      }
+    ],
+    "env": {
+      "DB_USER": "@to-do-db-user",
+      "DB_PASSWORD": "@to-do-db-password",
+      "DB_HOST": "@to-do-db-host",
+      "DB_NAME": "@to-do-db-name"
+    }
+  }
