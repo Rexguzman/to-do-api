@@ -13,76 +13,133 @@ const { createUserToDoSchema } = require('../utils/schemas/userToDos');
 require('../utils/auth/strategies/jwt');
 
 function userToDosApi(app) {
-  const router = express.Router();
-  app.use('/api/user-to-do', router);
+    const router = express.Router();
+    app.use('/api/user-to-dos', router);
 
-  const userToDosService = new UserToDosService();
+    const userToDosService = new UserToDosService();
 
-  router.get(
-    '/',
-    passport.authenticate('jwt', { session: false }),
-    scopesValidationHandler(['read:user-to-dos']),
-    validationHandler({ userId: userIdSchema }, 'query'),
-    async function (req, res, next) {
-      const { userId } = req.query;
+    router.get(
+        '/:userId',
+        async (req, res, next) => {
+            try {
+                const { userId } = req.params;
+                const userToDos = await userToDosService.getUserToDos({
+                    userId,
+                });
 
-      try {
-        const userToDos = await userToDosService.getUserToDos({ userId });
+                res.status(200).json({
+                    data: userToDos,
+                    message: 'to-dos listed',
+                });
+            } catch (err) {
+                next(err);
+            }
+        }
+    );
 
-        res.status(200).json({
-          data: userToDos,
-          message: 'user to-dos listed',
-        });
-      } catch (error) {
-        next(error);
-      }
-    }
-  );
+    router.get('/to-do/',async (req, res, next) => {
+        try {
+            const { toDoId } = req.body;
+            const userToDo = await userToDosService.getUserToDo({ toDoId });
 
-  router.post(
-    '/',
-    passport.authenticate('jwt', { session: false }),
-    scopesValidationHandler(['create:user-to-dos']),
-    validationHandler(createUserToDoSchema),
-    async function (req, res, next) {
-      const { body: userToDo } = req;
-      try {
-        const createdUserToDoId = await userToDosService.createUserToDo({
-          userToDo,
-        });
+            res.status(200).json({
+                data: userToDo,
+                message: 'to-do listed',
+            });
+        } catch (err) {
+            next(err);
+        }
+    });
 
-        res.status(201).json({
-          data: createdUserToDoId,
-          message: 'user to-do created',
-        });
-      } catch (err) {
-        next(err);
-      }
-    }
-  );
+    router.post(
+        '/',
+        async (req, res, next) => {
+            try {
+                const data = req.body;
+                const createUserToDo = await userToDosService.createUserToDo({
+                    data,
+                });
 
-  router.delete(
-    '/:userToDoId',
-    passport.authenticate('jwt', { session: false }),
-    scopesValidationHandler(['create:delete-to-dos']),
-    validationHandler({ userToDoId: toDoIdSchema }, 'params'),
-    async function (req, res, next) {
-      const { userToDoId } = req.params;
+                res.status(201).json({
+                    toDoId: createUserToDo,
+                    message: 'to-do created',
+                });
+            } catch (err) {
+                next(err);
+            }
+        }
+    );
 
-      try {
-        const deletedUserToDoId = await userToDosService.deleteUserToDo({
-          userToDoId,
-        });
+    router.put(
+        '/',
+        async (req, res, next) => {
+            try {
+                const id = req.body._id;
+                const data = {
+                    userId : req.body.userId,
+                    title: req.body.title,
+                    description: req.body.description,
+                    completed: req.body.completed,
+                };
+                const updatedUserToDos = await userToDosService.updateUserToDo(
+                    id,
+                    data
+                );
 
-        res.status(200).json({
-          data: deletedUserToDoId,
-          message: 'user to-do deleted',
-        });
-      } catch (error) {
-        next(error);
-      }
-    }
-  );
+                res.status(200).json({
+                    ...updatedUserToDos,
+                    ...data,
+                    message: 'to-do updated',
+                });
+            } catch (err) {
+                next(err);
+            }
+        }
+    );
+
+    router.put(
+        '/completed',
+        async (req, res, next) => {
+            try {
+                const id = req.body._id;
+                const data = {
+                    userId : req.body.userId,
+                    completed: req.body.completed,
+                };
+                const updatedUserToDos = await userToDosService.updateUserToDo(
+                    id,
+                    data
+                );
+                console.log(updatedUserToDos);
+
+                res.status(200).json({
+                    _id: updatedUserToDos,
+                    ...data,
+                    message: 'to-do updated',
+                });
+            } catch (err) {
+                next(err);
+            }
+        }
+    );
+
+    router.delete(
+        '/:toDoId',
+        async (req, res) => {
+            try {
+                const { toDoId } = req.params;
+                const deletedUserToDos = await userToDosService.deleteUserToDo({
+                    toDoId,
+                });
+
+                res.status(200).json({
+                    data: deletedUserToDos,
+                    message: 'to-do deleted',
+                });
+            } catch (err) {
+                next(err);
+            }
+        }
+    );
 }
-
 module.exports = userToDosApi;

@@ -1,35 +1,54 @@
 const MongoLib = require('../lib/mongo');
 
 class UserToDosService {
-  constructor() {
-    this.collection = 'user-to-dos';
-    this.mongoDB = new MongoLib();
+    constructor() {
+        this.collection = 'user-to-dos';
+        this.mongoDB = new MongoLib();
+    }
+
+    async getUserToDos({ userId }) {
+        const query = userId && { userId };
+        const userToDos = await this.mongoDB.getAll(this.collection, query);
+
+        return userToDos || [];
+    }
+
+    async getUserToDo( toDoId ) {
+        
+        const userToDo = await this.mongoDB.get(this.collection, toDoId);
+
+        return userToDo || [];
+    }
+
+    async createUserToDo({ data }) {
+        const { title, description, completed, userId } = data;
+        const createdUserToDoId = await this.mongoDB.create(this.collection, {
+            userId,
+            title,
+            description,
+            completed,
+        });
+
+        return createdUserToDoId;
+    }
+
+    async updateUserToDo(toDoId, data ) {
+      const updatedToDoId = await this.mongoDB.update(
+          this.collection,
+          toDoId,
+          data
+      );
+      return updatedToDoId;
   }
 
-  async getUserToDos({ userId }) {
-    const query = userId && { userId };
-    const userToDos = await this.mongoDB.getAll(this.collection, query);
+    async deleteUserToDo({ toDoId }) {
+        const deletedUserToDoId = await this.mongoDB.delete(
+            this.collection,
+            toDoId
+        );
 
-    return userToDos || [];
-  }
-
-  async createUserToDo({ userToDo }) {
-    const createdUserToDoId = await this.mongoDB.create(
-      this.collection,
-      userToDo
-    );
-
-    return createdUserToDoId;
-  }
-
-  async deleteUserToDo({ userToDoId }) {
-    const deletedUserToDoId = await this.mongoDB.delete(
-      this.collection,
-      userToDoId
-    );
-
-    return deletedUserToDoId;
-  }
+        return deletedUserToDoId;
+    }
 }
 
 module.exports = UserToDosService;
