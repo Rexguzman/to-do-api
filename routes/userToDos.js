@@ -5,9 +5,7 @@ const UserToDosService = require('../services/userToDos');
 const validationHandler = require('../utils/middleware/validationHandler');
 const scopesValidationHandler = require('../utils/middleware/scopesValidationHandler');
 
-const { toDoIdSchema } = require('../utils/schemas/toDos');
-const { userIdSchema } = require('../utils/schemas/users');
-const { createUserToDoSchema } = require('../utils/schemas/userToDos');
+const { userToDoIdSchema ,createUserToDoSchema, updateUserToDoSchema, completedUserToDoSchema } = require('../utils/schemas/userToDos');
 
 //JWT Strategy
 require('../utils/auth/strategies/jwt');
@@ -37,22 +35,9 @@ function userToDosApi(app) {
         }
     );
 
-    router.get('/to-do/',async (req, res, next) => {
-        try {
-            const { toDoId } = req.body;
-            const userToDo = await userToDosService.getUserToDo({ toDoId });
-
-            res.status(200).json({
-                data: userToDo,
-                message: 'to-do listed',
-            });
-        } catch (err) {
-            next(err);
-        }
-    });
-
     router.post(
         '/',
+        validationHandler(createUserToDoSchema),
         async (req, res, next) => {
             try {
                 const data = req.body;
@@ -72,6 +57,7 @@ function userToDosApi(app) {
 
     router.put(
         '/',
+        validationHandler(updateUserToDoSchema),
         async (req, res, next) => {
             try {
                 const id = req.body._id;
@@ -81,13 +67,13 @@ function userToDosApi(app) {
                     description: req.body.description,
                     completed: req.body.completed,
                 };
-                const updatedUserToDos = await userToDosService.updateUserToDo(
+                const updatedUserToDosId = await userToDosService.updateUserToDo(
                     id,
                     data
                 );
 
                 res.status(200).json({
-                    ...updatedUserToDos,
+                    _id: updatedUserToDosId,
                     ...data,
                     message: 'to-do updated',
                 });
@@ -99,6 +85,7 @@ function userToDosApi(app) {
 
     router.put(
         '/completed',
+        validationHandler(completedUserToDoSchema),
         async (req, res, next) => {
             try {
                 const id = req.body._id;
@@ -125,6 +112,7 @@ function userToDosApi(app) {
 
     router.delete(
         '/:toDoId',
+        validationHandler({ toDoId: userToDoIdSchema }, 'params'),
         async (req, res) => {
             try {
                 const { toDoId } = req.params;

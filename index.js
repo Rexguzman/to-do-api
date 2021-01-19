@@ -1,6 +1,7 @@
 const helmet = require("helmet");
 const express = require('express');
 const app = express();
+const cors = require('cors')
 
 const { config } = require('./config/index');
 
@@ -18,6 +19,7 @@ const notFoundHandler = require('./utils/middleware/notFoundHandler');
 
 // body parser
 app.use(express.json());
+app.use(cors());
 app.use(helmet());
 
 // routes
