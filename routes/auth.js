@@ -44,20 +44,21 @@ function authApi(app) {
             next(boom.unauthorized());
           }
 
-          const { _id: id, name, email } = user;
+          const { _id: id, name, email, verifiedEmail } = user;
 
           const payload = {
             sub: id,
             name,
             email,
+            verifiedEmail,
             scopes: apiKey.scopes
           };
 
           const token = jwt.sign(payload, config.authJwtSecret, {
-            expiresIn: '15m'
+            //expiresIn: '15m'
           });
 
-          return res.status(200).json({ token, user: { id, name, email } });
+          return res.status(200).json({ token, user: { id, name, email, verifiedEmail } });
         });
       } catch (error) {
         next(error);

@@ -18,6 +18,8 @@ function userToDosApi(app) {
 
     router.get(
         '/:userId',
+        //passport.authenticate('jwt', { session: false }),
+        validationHandler({ userId: userToDoIdSchema }),
         async (req, res, next) => {
             try {
                 const { userId } = req.params;
@@ -37,6 +39,7 @@ function userToDosApi(app) {
 
     router.post(
         '/',
+        //passport.authenticate('jwt', { session: false }),
         validationHandler(createUserToDoSchema),
         async (req, res, next) => {
             try {
@@ -57,6 +60,7 @@ function userToDosApi(app) {
 
     router.put(
         '/',
+        //passport.authenticate('jwt', { session: false }),
         validationHandler(updateUserToDoSchema),
         async (req, res, next) => {
             try {
@@ -85,6 +89,7 @@ function userToDosApi(app) {
 
     router.put(
         '/completed',
+        //passport.authenticate('jwt', { session: false }),
         validationHandler(completedUserToDoSchema),
         async (req, res, next) => {
             try {
@@ -97,7 +102,6 @@ function userToDosApi(app) {
                     id,
                     data
                 );
-                console.log(updatedUserToDos);
 
                 res.status(200).json({
                     _id: updatedUserToDos,
@@ -112,6 +116,7 @@ function userToDosApi(app) {
 
     router.delete(
         '/:toDoId',
+        //passport.authenticate('jwt', { session: false }),
         validationHandler({ toDoId: userToDoIdSchema }, 'params'),
         async (req, res) => {
             try {

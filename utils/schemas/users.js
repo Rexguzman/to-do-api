@@ -10,7 +10,7 @@ const userSchema = {
 
 const createUserSchema = {
   ...userSchema,
-  isAdmin: joi.boolean()
+  verifiedEmail: joi.boolean().required()
 };
 
 const createProviderUserSchema = {

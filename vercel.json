@@ -17,6 +17,9 @@
       "DB_USER": "@to-do-db-user",
       "DB_PASSWORD": "@to-do-db-password",
       "DB_HOST": "@to-do-db-host",
-      "DB_NAME": "@to-do-db-name"
+      "DB_NAME": "@to-do-db-name",
+      "AUTH_JWT_SECRET": "@to-do-auth-jwt-secret",
+      "MAIL_USER": "@to-do-mail-user",
+      "MAIL_PASS": "@to-do-mail-pass"
     }
   }

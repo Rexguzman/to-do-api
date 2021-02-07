@@ -13,7 +13,7 @@ class UsersService {
   }
 
   async createUser({ user }) {
-    const { name, email, password } = user;
+    const { name, email, password, verifiedEmail } = user;
 
     const queriedUser = await this.getUser({ email: user.email });
 
@@ -24,6 +24,7 @@ class UsersService {
         name,
         email,
         password: hashedPassword,
+        verifiedEmail,
       });
   
       return createUserId;

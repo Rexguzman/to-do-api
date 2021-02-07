@@ -6,8 +6,8 @@ const cors = require('cors')
 const { config } = require('./config/index');
 
 const authApi = require('./routes/auth');
-const toDosApi = require('./routes/toDos.js');
 const userToDosApi = require('./routes/userToDos.js');
+const email = require('./routes/email');
 
 const {
   logErrors,
@@ -19,13 +19,17 @@ const notFoundHandler = require('./utils/middleware/notFoundHandler');
 
 // body parser
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  credentials: true,
+  origin: ["https://rexguzman.github.io", "http://localhost:8080"],
+  method: "GET,HEAD,PUT,PATCH,POST,DELETE",
+}));
 app.use(helmet());
 
 // routes
 authApi(app);
-toDosApi(app);
 userToDosApi(app);
+email(app);
 
 // Catch 404
 app.use(notFoundHandler);
